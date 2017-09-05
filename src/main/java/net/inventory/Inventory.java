@@ -1,5 +1,6 @@
 package net.inventory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -22,21 +23,23 @@ public class Inventory implements Listener {
         void onClose(Player Player, org.bukkit.inventory.Inventory inv);
     }
 
-    Player Player; String Name; Integer Bars; InventoryAction Action; Map<Integer, ItemStack> Stacks; Boolean BuildInventory;
+    public Player Player; public String Name; public Integer Bars; public InventoryAction Action; public Map<Integer, ItemStack> Stacks; public Boolean BuildInventory;
 
     public Inventory(Player Player, String Name, Integer Bars, InventoryAction Action, Boolean BuildInventory, Plugin Plugin) {
         this.Player = Player; this.Name = Name; this.Bars = Bars; this.Action = Action; this.BuildInventory = BuildInventory;
-        Bukkit.getPluginManager().registerEvents(this, Plugin);
+        InventoryListener.registerListener(this);
     }
 
-    public org.bukkit.inventory.Inventory putClass(Map<Integer, ItemStack> Stacks) {
+    public org.bukkit.inventory.Inventory putClass(Map<Integer, ItemStack> Stacks, Boolean openRun) {
         org.bukkit.inventory.Inventory inv = Bukkit.createInventory(Player.getPlayer(), 9 * Bars, Name);
         if(BuildInventory) {
-            this.Player.openInventory(inv);
-            this.BuildInventory(inv, Stacks);
+        	if(openRun) 
+        		this.Player.openInventory(inv);
+        	this.BuildInventory(inv, Stacks);
         } else {
             for (Integer Slot : Stacks.keySet()) inv.setItem(Slot, Stacks.get(Slot));
-            this.Player.openInventory(inv);
+            if(openRun)
+            	this.Player.openInventory(inv);
         }
         this.Stacks = Stacks;
         return inv;
@@ -56,40 +59,60 @@ public class Inventory implements Listener {
             }
         } this.Stacks = Stacks;
     }
+    
+    public static class InventoryListener {
+    	private static HashMap<String, Inventory> Actions = new HashMap<>();
+    	public static void registerListener(Inventory Inventory) {
+    		if (Actions.containsKey(Inventory.Name))
+    			Actions.remove(Inventory.Name);
+    		Actions.put(Inventory.Name, Inventory);
+     	}
+    	public static void unregisterListener(Inventory Inventory) {
+    		if (Actions.containsKey(Inventory.Name))
+    			Actions.remove(Inventory.Name);
+    	}
+    	public static void unregisterListener(String Name) {
+    		if (Actions.containsKey(Name))
+    			Actions.remove(Name);
+    	}
+    	
+    	public static void registerListeners(Plugin Plugin) {
+    		Bukkit.getPluginManager().registerEvents(new Listener() {
 
-    /* LISTENERS */
+    		    @EventHandler
+    		    public void on(InventoryOpenEvent Event) {
+    		    	if(Actions.containsKey(Event.getInventory().getName())) {
+    		    		Actions.get(Event.getInventory().getName()).Action.onOpen(Actions.get(Event.getInventory().getName()).Player, Event.getInventory());
+    		        }
+    		    }
 
-    @EventHandler
-    public void on(InventoryOpenEvent Event) {
-        if(Event.getInventory().getName().equals(this.Name)) {
-            Action.onOpen(this.Player, Event.getInventory());
-        }
-    }
+    		    @EventHandler
+    		    public void on(InventoryCloseEvent Event) {
+    		    	if(Actions.containsKey(Event.getInventory().getName())) {
+    		            Actions.get(Event.getInventory().getName()).Action.onClose(Actions.get(Event.getInventory().getName()).Player, Event.getInventory());
+    		        }
+    		    }
 
-    @EventHandler
-    public void on(InventoryCloseEvent Event) {
-        if(Event.getInventory().getName().equals(this.Name)) {
-            Action.onClose(this.Player, Event.getInventory());
-        }
-    }
+    		    @EventHandler
+    		    public void on(InventoryClickEvent Event) {
+    		    	if(Actions.containsKey(Event.getInventory().getName())) {
+    		    		Inventory inv = Actions.get(Event.getInventory().getName());
+    		            if (Event.getRawSlot() >= 0 && Event.getRawSlot() <= 9 * inv.Bars) {
+    		                Event.setCancelled(true);
+    		                if(inv.Stacks.containsKey(Event.getSlot())) {
+    		                    inv.Action.onClick(inv.Player, Event.getClickedInventory(), Event.getSlot());
+    		                }
+    		            }
+    		        }
+    		    }
 
-    @EventHandler
-    public void on(InventoryClickEvent Event) {
-        if(Event.getInventory().getName().equals(this.Name)) {
-            if (Event.getRawSlot() >= 0 && Event.getRawSlot() <= 9 * this.Bars) {
-                Event.setCancelled(true);
-                if(this.Stacks.containsKey(Event.getSlot())) {
-                    Action.onClick(this.Player, Event.getClickedInventory(), Event.getSlot());
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void on(InventoryDragEvent Event) {
-        if(Event.getInventory().getName().equals(this.Name)) {
-            Event.setCancelled(true);
-        }
+    		    @EventHandler
+    		    public void on(InventoryDragEvent Event) {    		        
+    		    	if(Actions.containsKey(Event.getInventory().getName())) 
+    		    		Event.setCancelled(true);
+    		    }
+			}, Plugin);
+    	}
     }
     
 }
