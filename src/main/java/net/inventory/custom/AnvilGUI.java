@@ -23,10 +23,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
  
-/**
+/*
 * Created by chasechocolate.
 */
 public class AnvilGUI { 
+	
+	/*
+	 * THIS CLASS IS NOT CREATED BY ME
+	 */
+	
     private class AnvilContainer extends ContainerAnvil {
         public AnvilContainer(EntityHuman entity){
             super(entity.inventory, entity.world,new BlockPosition(0, 0, 0), entity);
