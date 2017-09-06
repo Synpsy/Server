@@ -23,10 +23,10 @@ public class Inventory implements Listener {
         void onClose(Player Player, org.bukkit.inventory.Inventory inv);
     }
 
-    public Player Player; public String Name; public Integer Bars; public InventoryAction Action; public Map<Integer, ItemStack> Stacks; public Boolean BuildInventory;
+    public Player Player; public String Name; public Integer Bars; public InventoryAction Action; public Map<Integer, ItemStack> Stacks; public Integer BuildDelay; public Boolean BuildInventory;
 
-    public Inventory(Player Player, String Name, Integer Bars, InventoryAction Action, Boolean BuildInventory, Plugin Plugin) {
-        this.Player = Player; this.Name = Name; this.Bars = Bars; this.Action = Action; this.BuildInventory = BuildInventory;
+    public Inventory(Player Player, String Name, Integer Bars, InventoryAction Action, Boolean BuildInventory, Integer BuildDelay, Plugin Plugin) {
+        this.Player = Player; this.Name = Name; this.Bars = Bars; this.Action = Action; this.BuildInventory = BuildInventory; this.BuildDelay = BuildDelay;
         InventoryListener.registerListener(this);
     }
 
@@ -49,7 +49,7 @@ public class Inventory implements Listener {
         if(BuildInventory) {
             for(Integer Slot : Stacks.keySet()) {
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(this.BuildDelay);
                     inv.setItem(Slot, Stacks.get(Slot));
                     this.Player.updateInventory();
                     this.Player.playSound(this.Player.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
