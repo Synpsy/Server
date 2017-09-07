@@ -28,10 +28,6 @@ import org.bukkit.plugin.Plugin;
 */
 public class AnvilGUI { 
 	
-	/*
-	 * THIS CLASS IS NOT CREATED BY ME
-	 */
-	
     private class AnvilContainer extends ContainerAnvil {
         public AnvilContainer(EntityHuman entity){
             super(entity.inventory, entity.world,new BlockPosition(0, 0, 0), entity);
@@ -121,10 +117,18 @@ public class AnvilGUI {
  
     private Listener listener;
  
-    public AnvilGUI(Player player, final AnvilClickEventHandler handler, Plugin Plugin){
+    public static interface AnvilInventoryAction {
+    	void onOpen(Player Player);
+    	void onClose(Player Player);
+    }
+    
+    private AnvilInventoryAction AnvilInventoryAction;
+    
+    public AnvilGUI(Player player, final AnvilClickEventHandler handler, AnvilInventoryAction AnvilInventoryAction, Plugin Plugin){
         this.player = player;
         this.handler = handler;
- 
+        this.AnvilInventoryAction = AnvilInventoryAction;
+        
         this.listener = new Listener(){
             @EventHandler
             public void onInventoryClick(InventoryClickEvent event){
@@ -172,6 +176,7 @@ public class AnvilGUI {
                     if(inv.equals(AnvilGUI.this.inv)){
                         inv.clear();
                         destroy();
+                        AnvilInventoryAction.onClose(player);
                     }
                 }
             }
@@ -184,7 +189,8 @@ public class AnvilGUI {
             }
         };
  
-        Bukkit.getPluginManager().registerEvents(listener, Plugin); //Replace with instance of main class
+        Bukkit.getPluginManager().registerEvents(listener, Plugin);
+    
     }
  
     public Player getPlayer(){
@@ -221,6 +227,8 @@ public class AnvilGUI {
  
         //Add the slot listener
         p.activeContainer.addSlotListener(p);
+        
+        AnvilInventoryAction.onOpen(player);
     }
  
     public void destroy(){
