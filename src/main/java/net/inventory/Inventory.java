@@ -23,10 +23,6 @@ public class Inventory implements Listener {
 		void onClose(Player Player, org.bukkit.inventory.Inventory inv);
 	}
 
-	// thread.sleep erstezten
-	// hashmap mit nonclick items adden
-	// popupsound einstellen
-
 	public Player Player;
 	public String Name;
 	public Integer Bars;

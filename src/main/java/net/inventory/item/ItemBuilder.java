@@ -1,12 +1,20 @@
 package net.inventory.item;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.SkullType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+
+import com.mojang.authlib.GameProfile;
+
+import net.mojang.GameProfileBuilder;
+import net.plugin.log.PluginLogger;
 
 public class ItemBuilder {
 
@@ -39,35 +47,44 @@ public class ItemBuilder {
         return itemStack;
     }
 
-    public static ItemStack BuildSkull(String Owner, String DisplayName, Integer Byte) {
-        ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, Short.valueOf(String.valueOf(Byte)).shortValue());
-        SkullMeta skullMeta = (SkullMeta)itemStack.getItemMeta();
-        skullMeta.setDisplayName(DisplayName);
-        skullMeta.setOwner(Owner);
-        itemStack.setItemMeta(skullMeta);
+    public static ItemStack Skull(String Owner, Integer Amount, String DisplayName, String[] Lore) {
+        ItemStack itemStack = ItemBuilder.Build(Material.SKULL_ITEM, 3, 3, DisplayName, Lore);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        try {
+            GameProfile gameProfile = GameProfileBuilder.fetch(Bukkit.getOfflinePlayer(Owner).getUniqueId());
+            Field profileField = itemMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(itemMeta, gameProfile);
+            itemStack.setItemMeta(itemMeta);
+        } catch (Exception ex) {
+            PluginLogger.log(ItemBuilder.class, "Skull Method cant run");
+        }
         return itemStack;
     }
 
-    public static ItemStack BuildSkull(String Owner, String DisplayName, String[] Lore, Integer Byte) {
-        ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, Short.valueOf(String.valueOf(Byte)).shortValue());
-        SkullMeta skullMeta = (SkullMeta)itemStack.getItemMeta();
-        skullMeta.setDisplayName(DisplayName);
-        skullMeta.setOwner(Owner);
-        if (Lore != null) {
-            ArrayList<String> List = new ArrayList();
-            String[] var7 = Lore;
-            int var8 = Lore.length;
-
-            for(int var9 = 0; var9 < var8; ++var9) {
-                String lore = var7[var9];
-                List.add(lore);
-            }
-
-            skullMeta.setLore(List);
+    public static ItemStack Skull(String Owner, Integer Amount, String DisplayName) {
+        ItemStack itemStack = ItemBuilder.Build(Material.SKULL_ITEM, 3, 3, DisplayName);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        try {
+            GameProfile gameProfile = GameProfileBuilder.fetch(Bukkit.getOfflinePlayer(Owner).getUniqueId());
+            Field profileField = itemMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(itemMeta, gameProfile);
+            itemStack.setItemMeta(itemMeta);
+        } catch (Exception ex) {
+            PluginLogger.log(ItemBuilder.class, "Skull Method cant run");
         }
-
-        itemStack.setItemMeta(skullMeta);
         return itemStack;
+    }
+
+    public static ItemStack Skull(SkullType skullType, Integer Amount, String DisplayName, String[] Lore) {
+        Integer Byte = (skullType.equals(SkullType.SKELETON)  ? 0 : skullType.equals(SkullType.WITHER) ? 1 : skullType.equals(SkullType.ZOMBIE) ? 2 : skullType.equals(SkullType.PLAYER) ? 3 : skullType.equals(SkullType.CREEPER) ? 4 : 0);
+        return ItemBuilder.Build(Material.SKULL_ITEM, Amount, Byte, DisplayName, Lore);
+    }
+
+    public static ItemStack Skull(SkullType skullType, Integer Amount, String DisplayName) {
+        Integer Byte = (skullType.equals(SkullType.SKELETON)  ? 0 : skullType.equals(SkullType.WITHER) ? 1 : skullType.equals(SkullType.ZOMBIE) ? 2 : skullType.equals(SkullType.PLAYER) ? 3 : skullType.equals(SkullType.CREEPER) ? 4 : 0);
+        return ItemBuilder.Build(Material.SKULL_ITEM, Amount, Byte, DisplayName);
     }
 
     public static ItemStack Glow(ItemStack itemStack) {
