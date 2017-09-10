@@ -60,6 +60,8 @@ public class Inventory implements Listener {
 		InventoryListener.registerListener(this);
 	}
 
+	private org.bukkit.inventory.Inventory inventory;
+	
 	public org.bukkit.inventory.Inventory putClass(Map<Integer, ItemStack> Stacks, Map<Integer, ItemStack> NonStacks, Boolean openRun) {
 		org.bukkit.inventory.Inventory inv = Bukkit.createInventory(Player.getPlayer(), 9 * Bars, Name);
 		if (BuildInventory) {
@@ -79,6 +81,7 @@ public class Inventory implements Listener {
 				this.Player.openInventory(inv);
 		}
 		this.Stacks = Stacks; this.NonStacks = NonStacks;
+		this.inventory = inv;
 		return inv;
 	}
 
@@ -151,6 +154,11 @@ public class Inventory implements Listener {
         }
 
         return SortMap;
+	}
+	
+	public void setItem(Integer Slot, ItemStack itemStack) {
+		Stacks.put(Slot, itemStack);
+		this.inventory.setItem(Slot, itemStack);
 	}
 	
 	public static class InventoryListener {
