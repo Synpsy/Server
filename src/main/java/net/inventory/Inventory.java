@@ -104,7 +104,7 @@ public class Inventory implements Listener {
 			for(Integer Slot : NonStacks.keySet()) 
 				Stack.put(Slot, NonStacks.get(Slot));
 			
-			Stacks = (HashMap<Integer, ItemStack>) SortMap(Stack);
+			Stacks = SortMap(Stack);
 			
 			CountSlot = 0;
 			BuildSchedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(Plugin, new Runnable() {
@@ -142,8 +142,8 @@ public class Inventory implements Listener {
 		return -1;
 	}
 
-	private Map<Integer, ?> SortMap(Map<Integer, ?> input) {
-        Map<Integer, ?> SortMap = new TreeMap<>(input);
+	private Map<Integer, ItemStack> SortMap(Map<Integer, ItemStack> input) {
+        Map<Integer, ItemStack> SortMap = new TreeMap<Integer, ItemStack>(input);
         Set SortMapSet = SortMap.entrySet();
         Iterator IteratorMap = SortMapSet.iterator();
         while(IteratorMap.hasNext()) {
