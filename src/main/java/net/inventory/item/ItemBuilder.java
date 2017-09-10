@@ -11,9 +11,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.mojang.authlib.GameProfile;
-
-import net.mojang.GameProfileBuilder;
 import net.plugin.log.PluginLogger;
 
 public class ItemBuilder {
@@ -45,46 +42,6 @@ public class ItemBuilder {
 
         itemStack.setItemMeta(itemMeta);
         return itemStack;
-    }
-
-    public static ItemStack Skull(String Owner, Integer Amount, String DisplayName, String[] Lore) {
-        ItemStack itemStack = ItemBuilder.Build(Material.SKULL_ITEM, 3, 3, DisplayName, Lore);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        try {
-            GameProfile gameProfile = GameProfileBuilder.fetch(Bukkit.getOfflinePlayer(Owner).getUniqueId());
-            Field profileField = itemMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(itemMeta, gameProfile);
-            itemStack.setItemMeta(itemMeta);
-        } catch (Exception ex) {
-            PluginLogger.log(ItemBuilder.class, "Skull Method cant run");
-        }
-        return itemStack;
-    }
-
-    public static ItemStack Skull(String Owner, Integer Amount, String DisplayName) {
-        ItemStack itemStack = ItemBuilder.Build(Material.SKULL_ITEM, 3, 3, DisplayName);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        try {
-            GameProfile gameProfile = GameProfileBuilder.fetch(Bukkit.getOfflinePlayer(Owner).getUniqueId());
-            Field profileField = itemMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(itemMeta, gameProfile);
-            itemStack.setItemMeta(itemMeta);
-        } catch (Exception ex) {
-            PluginLogger.log(ItemBuilder.class, "Skull Method cant run");
-        }
-        return itemStack;
-    }
-
-    public static ItemStack Skull(SkullType skullType, Integer Amount, String DisplayName, String[] Lore) {
-        Integer Byte = (skullType.equals(SkullType.SKELETON)  ? 0 : skullType.equals(SkullType.WITHER) ? 1 : skullType.equals(SkullType.ZOMBIE) ? 2 : skullType.equals(SkullType.PLAYER) ? 3 : skullType.equals(SkullType.CREEPER) ? 4 : 0);
-        return ItemBuilder.Build(Material.SKULL_ITEM, Amount, Byte, DisplayName, Lore);
-    }
-
-    public static ItemStack Skull(SkullType skullType, Integer Amount, String DisplayName) {
-        Integer Byte = (skullType.equals(SkullType.SKELETON)  ? 0 : skullType.equals(SkullType.WITHER) ? 1 : skullType.equals(SkullType.ZOMBIE) ? 2 : skullType.equals(SkullType.PLAYER) ? 3 : skullType.equals(SkullType.CREEPER) ? 4 : 0);
-        return ItemBuilder.Build(Material.SKULL_ITEM, Amount, Byte, DisplayName);
     }
 
     public static ItemStack Glow(ItemStack itemStack) {

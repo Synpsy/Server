@@ -1,7 +1,10 @@
 package net.inventory;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -101,6 +104,7 @@ public class Inventory implements Listener {
 			for(Integer Slot : NonStacks.keySet()) 
 				Stack.put(Slot, NonStacks.get(Slot));
 			
+			Stacks = (HashMap<Integer, ItemStack>) SortMap(Stack);
 			
 			CountSlot = 0;
 			BuildSchedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(Plugin, new Runnable() {
@@ -138,6 +142,17 @@ public class Inventory implements Listener {
 		return -1;
 	}
 
+	private Map<Integer, ?> SortMap(Map<Integer, ?> input) {
+        Map<Integer, ?> SortMap = new TreeMap<>(input);
+        Set SortMapSet = SortMap.entrySet();
+        Iterator IteratorMap = SortMapSet.iterator();
+        while(IteratorMap.hasNext()) {
+            Map.Entry me2 = (Map.Entry)IteratorMap.next();
+        }
+
+        return SortMap;
+	}
+	
 	public static class InventoryListener {
 		private static HashMap<String, Inventory> Actions = new HashMap<>();
 
